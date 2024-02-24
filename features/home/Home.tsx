@@ -13,15 +13,51 @@ import { Container, Tab } from "@/components";
 import { textStyle } from "../../styles/globalTextStyle";
 import { TabItemProps } from "@/types/TabItemProps";
 import { primary } from "@/constants/Colors";
+import ShoesCard from "../shoes/ShoesCard";
+import { shoesData } from "../shoes/shoesData";
+import type { ShoesDataProps } from "../shoes/shoesData";
+import { ShoesCategoryList } from "./ShoesCategoryList";
 // export * as textStyle from '../../styles/globalTextStyle'
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState("1");
+  const tabItem: TabItemProps[] = shoesData.reduce(
+    (acc: any, curr: ShoesDataProps) => {
+      const hasCategory =
+        !acc.length ||
+        !acc.filter((item: TabItemProps) => item.label === curr.category)
+          .length;
+
+      console.log("hasCategory", hasCategory);
+
+      if (hasCategory) {
+        const tabContent = shoesData.filter(
+          (value) => value.category === curr.category
+        );
+        return acc.concat({
+          id: curr.category,
+          label: curr.category,
+          content: <ShoesCategoryList item={tabContent} />,
+        });
+      }
+      // console.log("curr", curr);
+      return acc;
+    },
+    []
+  );
+
+  console.log("tabItem", tabItem);
   const tab: TabItemProps[] = [
     {
       key: "1",
       label: "Best Seller",
-      content: "Tab 1 desc",
+      content: (
+        <View style={styles.tabContentContainer}>
+          <ShoesCard />
+          <ShoesCard />
+          <ShoesCard />
+        </View>
+      ),
     },
     {
       key: "2",
@@ -66,6 +102,13 @@ const styles = StyleSheet.create({
   tab: {
     paddingHorizontal: 20,
     // backgroundColor: "red",
+  },
+
+  tabContentContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    // justifyContent: "center",
+    gap: 12,
   },
 });
 
